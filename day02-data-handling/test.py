@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 import datetime as dt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
 
 def generate_sample_data():
     n_rows = 1000
@@ -30,3 +33,24 @@ def generate_sample_data():
 # ========== ČÁST 2: ML MODEL PRO ÚVĚROVÉ RIZIKO ==========
 data = generate_sample_data()
 
+def create_risk_label(df):
+    high_amount = df['amount'] > 30000
+    low_balance = df['account_balance'] < 10000
+    withdrawal = df['transaction_type'] == 'withdrawal'
+    
+    risk_score = high_amount.astype(int) + low_balance.astype(int) + withdrawal.astype(int)
+    
+    is_risky = risk_score >= 2
+    
+    return is_risky.astype(int)
+
+# ========== ČÁST 3: ML MODEL ==========
+
+# Features (X) - co používáme pro predikci
+X = data[['amount', 'account_balance']]  # Začneme jen s číselnými
+
+# Target (y) - co chceme předpovědět  
+y = data['is_risky']
+
+print(f"Features shape: {X.shape}")
+print(f"Target shape: {y.shape}")
